@@ -1,0 +1,7 @@
+.grid-container {
+    width: 300rem;
+    heigh: 300rem;
+    grid-template-columns: repeat(1ft, 3);
+    grid-template-rows: repeat(1fr, 3);
+    gap: 15px 15px;
+}
