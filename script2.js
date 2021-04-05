@@ -28,6 +28,7 @@ const gameBoard = (() => {
     const updateSpot = (gridItem, value) => {
         gridItem.textContent = value
         gameboard[gridItem.dataset.x][gridItem.dataset.y] = value
+        gridItem.style.backgroundColor = '#999'
     };
     
     const isFull = function (){
@@ -43,9 +44,11 @@ const gameBoard = (() => {
     const getNotSymbolCell = (symbol) => {
         // return array of grid-item whose textcontext not symbol
         const gridCells = [...gridContainer.querySelectorAll(".grid-item")]
-        gridCells.filter(gridCell => {
-            return gridCell.textContent != symbol
+        const modified = gridCells.filter(gridCell => {
+            return gridCell.textContent == ""
         })
+
+        return modified
 
     }
 
@@ -127,8 +130,9 @@ const gamePlay = (function () {
         const gridItems = document.querySelectorAll(".grid-container > div")
         gridItems.forEach(item => {
             item.addEventListener('click', e => {
-                inTurn(human, e.target)
-
+                if (!inTurn(human, e.target)) { // end if won
+                    return
+                } // end if player won
                 computerPlay()
                 
             }, { once: true })
@@ -137,14 +141,14 @@ const gamePlay = (function () {
 
     function computerPlay() {
         let cellNotMine = gameBoard.getNotSymbolCell('o') // array of grid-item not marked by computer
-        let randomCell = randomCell(cellNotMine)
-        inTurn(randomCell)
+        let cell = randomCell(cellNotMine) 
+        inTurn(computer, cell)
         return
     }
 
     function randomCell(arr) { // return random item from an array
         const len = arr.length
-        const index =  getRandomIntInclusive(0, len)
+        const index =  getRandomInt(0, len)
         return arr[index]
     }
 
@@ -154,36 +158,27 @@ const gamePlay = (function () {
         return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
     }
 
-    function inTurn(player, target) {
-        player.mark();
-        if(player.isWon(e.target.dataset.x, e.target.dataset.y)) {
+    function inTurn(player, target) { // gameplay of each player, return false if won
+        player.mark(target);
+        if(player.isWon(target.dataset.x, target.dataset.y)) {
             celebrate(player.getId())
-            return;
+            return false;
         }
 
         if(gameBoard.isFull())
         {
             popup.querySelector(".popup-container p").textContent = `2 players tied!!!`
             popup.style.display = "block"
-            return
+            return false;
         }
+        return true;
     }
 
-
-    // function switchPlayer() {
-    //     activePlayer.disactive()
-    //     if (activePlayer.getId() == 1) {
-    //         activePlayer = player2;
-    //     }
-    //     else {
-    //         activePlayer = player1;
-    //     }
-    //     activePlayer.active()
-    // };
     const popup = document.querySelector(".popup-container")
 
     function celebrate(id){
-        popup.querySelector(".popup-container p").textContent = `Player ${id} won. Congratulation!!!`
+        if(id == 1) popup.querySelector(".popup-container p").textContent = `You won. Congratulation!!!`
+        else popup.querySelector(".popup-container p").textContent = `Computer won!!!`
         popup.style.display = "block"
 
     }
@@ -192,10 +187,9 @@ const gamePlay = (function () {
 
     function reset(e) {
         popup.style.display = "none"
-        document.querySelector(".container").style.opacity  = 1
         gameBoard.reset()
-        player1.reset()
-        player2.reset()
+        human.reset()
+        computer.reset()
         start()
         
     }
@@ -208,4 +202,4 @@ const gamePlay = (function () {
 })();
 
 document.querySelector(".reset").addEventListener('click', gamePlay.reset)
-document.querySelector(".start").addEventListener('click', gamePlay.start)
+document.querySelector(".start").addEventListener('click', gamePlay.reset)

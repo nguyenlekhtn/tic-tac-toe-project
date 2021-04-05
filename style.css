@@ -28,7 +28,6 @@
     display: flex;
     text-align: center;
     background-color: #EDE7F6;
-    padding: auto auto;
     font-weight: bold;
     font-size: 2em;
     justify-content: center;
@@ -134,4 +133,8 @@
   background-color: #3e8e41;
   box-shadow: 0 5px #666;
   transform: translateY(4px);
+}
+
+header {
+    text-align: center;
 }

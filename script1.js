@@ -160,7 +160,6 @@ const gamePlay = (function () {
 
     function reset(e) {
         popup.style.display = "none"
-        document.querySelector(".container").style.opacity  = 1
         gameBoard.reset()
         player1.reset()
         player2.reset()
