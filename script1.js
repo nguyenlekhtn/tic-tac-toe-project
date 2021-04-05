@@ -29,17 +29,27 @@ const gameBoard = (() => {
         gridItem.textContent = value
         gameboard[gridItem.dataset.x][gridItem.dataset.y] = value
     };
+    
+    const isFull = function (){
+        let count = 0;
+        gameboard.forEach(arr => {
+            arr.forEach(item => {
+                if(item != "") count++
+            })
+        })
+        return (count == 9)
+    };
 
     // const checkWonm = (symbol) => {
         
     // }
 
-    return {display, updateSpot, reset}     
+    return {display, updateSpot, reset, isFull}     
 })();
 
 
 const Player = (symbol, id) => {
-    const selfGrid = Array(3).fill(false).map(x => Array(3).fill(false))
+    let selfGrid = Array(3).fill(false).map(x => Array(3).fill(false));
     const gridLength = 3;
     const getId = () => {
 
@@ -116,6 +126,12 @@ const gamePlay = (function () {
                     celebrate(activePlayer.getId())
                     return;
                 }
+                // console.log(gameBoard.isFull())
+                if(gameBoard.isFull())
+                {
+                    popup.querySelector(".popup-container p").textContent = `2 players tied!!!`
+                    popup.style.display = "block"
+                }
                 switchPlayer(player1, player2);
                 
             }, { once: true })
@@ -123,7 +139,6 @@ const gamePlay = (function () {
     }
 
     function switchPlayer() {
-        console.log("parrot");
         activePlayer.disactive()
         if (activePlayer.getId() == 1) {
             activePlayer = player2;
@@ -136,7 +151,6 @@ const gamePlay = (function () {
     const popup = document.querySelector(".popup-container")
 
     function celebrate(id){
-        console.log("Winner: Player ", id)
         popup.querySelector(".popup-container p").textContent = `Player ${id} won. Congratulation!!!`
         popup.style.display = "block"
 
@@ -144,7 +158,7 @@ const gamePlay = (function () {
 
     document.querySelector(".reset").addEventListener('click', reset);
 
-    function reset() {
+    function reset(e) {
         popup.style.display = "none"
         document.querySelector(".container").style.opacity  = 1
         gameBoard.reset()
